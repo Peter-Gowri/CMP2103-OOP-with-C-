@@ -1,0 +1,68 @@
+// Chained (multilevel) inheritance: Vehicle -> Car -> ElectricCar
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Level 1: base class
+class Vehicle {
+protected:
+    string brand;
+    int year;
+public:
+    Vehicle(string b, int y) : brand(b), year(y) {}
+    void startEngine() const { cout << brand << " engine started.\n"; }
+    void showVehicleInfo() const {
+        cout << "Brand: " << brand << ", Year: " << year << "\n";
+    }
+};
+
+// Level 2: derived from Vehicle
+class Car : public Vehicle {
+protected:
+    int doors;
+public:
+    Car(string b, int y, int d) : Vehicle(b, y), doors(d) {}
+    void openDoors() const { cout << "Opening " << doors << " doors.\n"; }
+    void showCarInfo() const {
+        showVehicleInfo();                       // inherited from Vehicle
+        cout << "Doors: " << doors << "\n";
+    }
+};
+
+// Level 3: derived from Car (and therefore Vehicle)
+class ElectricCar : public Car {
+private:
+    int batteryKWh;
+public:
+    ElectricCar(string b, int y, int d, int bat)
+        : Car(b, y, d), batteryKWh(bat) {}
+    void charge() const {
+        cout << "Charging " << batteryKWh << " kWh battery.\n";
+    }
+    void showElectricCarInfo() const {
+        showCarInfo();                           // inherited from Car
+        cout << "Battery: " << batteryKWh << " kWh\n";
+    }
+};
+
+int main() {
+    cout << "--- Vehicle object ---\n";
+    Vehicle v("Toyota", 2015);
+    v.showVehicleInfo();
+    v.startEngine();
+
+    cout << "\n--- Car object ---\n";
+    Car c("Honda", 2019, 4);
+    c.showCarInfo();        // inherited + local
+    c.startEngine();        // inherited from Vehicle
+    c.openDoors();          // local to Car
+
+    cout << "\n--- ElectricCar object ---\n";
+    ElectricCar e("Tesla", 2023, 4, 75);
+    e.showElectricCarInfo();
+    e.startEngine();        // inherited from Vehicle (grandparent)
+    e.openDoors();          // inherited from Car (parent)
+    e.charge();             // local to ElectricCar
+
+    return 0;
+}
